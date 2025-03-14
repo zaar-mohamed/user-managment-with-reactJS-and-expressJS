@@ -1,0 +1,3 @@
+/Backend/node_modules
+.env
+git rm -r --cached C:/Users/hh/developement_digital/DEUSIÉME_ANNÉE/Création_d_une_application_Cloud_native/Microservices/Tp8_Microservices/Backend/node_modules
