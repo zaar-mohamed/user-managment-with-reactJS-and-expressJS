@@ -1,0 +1,55 @@
+version : "3"
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    valumes: 
+      - mongo_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=ProjectCloudDB
+  mongo_express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    restart: always
+    ports:
+      - "8081:8081"
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo
+    depends_on:
+      - mongo
+  backend:
+    build: ./backend
+    container_name: backend
+    restart: always
+    ports: 
+      - "3010:3010"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/ProjectCloudDB
+      - PORT=3010
+    depends_on:
+      - mongo
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    restart: always
+    environment: 
+      - REACT_APP_API_URL=http://nginx
+    volumes: 
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+  nginx:
+    build: ./nginx
+    container_name: nginx
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+      - frontend
+volumes:
+  mongo_data
