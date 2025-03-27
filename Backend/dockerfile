@@ -3,5 +3,5 @@ workdir /app
 copy package.json ./
 run npm install
 copy . .
-expose 3010
+expose 5000
 cmd ["node","server.js"]
