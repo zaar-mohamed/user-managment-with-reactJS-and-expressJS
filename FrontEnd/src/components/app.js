@@ -1,21 +1,18 @@
-
-
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
 
-const API_URL = 'http://localhost:3010'; 
+const API_URL = 'http://localhost:3003'; 
 
 function App() {
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [detailswindow, setdetailswindow] = useState(false);
+  const [detailspop, setdetailspop] = useState(false);
   const [showForm, setShowForm] = useState(false);
-  const [newUser, setNewUser] = useState({ name: '', email: '', age: '' });
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [age, setAge] = useState('');
 
-
-
-  
   const fetchUsers = async () => {
     try {
       const response = await axios.get(`${API_URL}/users`);
@@ -25,7 +22,6 @@ function App() {
     }
   };
 
-
   useEffect(() => {
     fetchUsers();
   }, []);
@@ -34,18 +30,19 @@ function App() {
     try {
       const response = await axios.get(`${API_URL}/users/${id}`);
       setSelectedUser(response.data);
-      setdetailswindow(true);
+      setdetailspop(true);
     } catch (error) {
       console.error('Erreur lors de la récupération des détails:', error);
     }
   };
 
-  
   const addUser = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${API_URL}/users`, newUser);
-      setNewUser({ name: '', email: '', age: '' });
+      await axios.post(`${API_URL}/users`, { name, email, age });
+      setName('');
+      setEmail('');
+      setAge('');
       setShowForm(false);
       fetchUsers();
     } catch (error) {
@@ -53,7 +50,6 @@ function App() {
     }
   };
 
-  
   const deleteUser = async (id) => {
     try {
       await axios.delete(`${API_URL}/users/${id}`);
@@ -61,12 +57,6 @@ function App() {
     } catch (error) {
       console.error('Erreur lors de la suppression:', error);
     }
-  };
-
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setNewUser({ ...newUser, [name]: value });
   };
 
   return (
@@ -78,29 +68,28 @@ function App() {
         </button>
       </header>
 
-      {/* add form */}
+      {/* Add form */}
       {showForm && (
         <div className="form-container">
           <h2>Ajouter un utilisateur</h2>
           <form onSubmit={addUser}>
             <div className="form-group">
               <label>Nom:</label>
-              <input type="text" name="name"  value={newUser.name} onChange={handleInputChange} required/>
+              <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
             </div>
             <div className="form-group">
               <label>Email:</label>
-              <input type="email" name="email"  value={newUser.email} onChange={handleInputChange} required/>
+              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
             </div>
             <div className="form-group">
               <label>Âge:</label>
-              <input type="number" name="age"  value={newUser.age} onChange={handleInputChange}/>
+              <input type="number" value={age} onChange={(e) => setAge(e.target.value)} />
             </div>
             <button type="submit" className="submit-button">Enregistrer</button>
           </form>
         </div>
       )}
 
-     
       <div className="users-container">
         <h2>Liste des Utilisateurs</h2>
         {users.length === 0 ? (
@@ -127,10 +116,10 @@ function App() {
         )}
       </div>
 
-      {/* Fenêtre  pour afficher les détails d'un utilisateur */}
-      {detailswindow && selectedUser && (
-        <div className="modal-backdrop">
-          <div className="modal-content">
+      {/* Display user details */}
+      {detailspop && selectedUser && (
+        <div className="detail-pop">
+          <div className="detail-content">
             <h2>Détails de l'utilisateur</h2>
             <div className="user-details">
               <p><strong>ID:</strong> {selectedUser._id}</p>
@@ -139,7 +128,7 @@ function App() {
               <p><strong>Âge:</strong> {selectedUser.age}</p>
               <p><strong>Créé le:</strong> {new Date(selectedUser.createdAt).toLocaleString()}</p>
             </div>
-            <button onClick={() => setdetailswindow(false)} className="close-button">
+            <button onClick={() => setdetailspop(false)} className="close-button">
               Fermer
             </button>
           </div>

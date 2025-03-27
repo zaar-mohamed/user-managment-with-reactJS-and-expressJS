@@ -1,7 +1,7 @@
-from node:14
+from node:18
 workdir ./app
-copy package*.json
+copy package*.json .
 run npm install
 copy . .
 expose 3000
-cmd ["nom","start"]
+cmd ["npm","start"]
